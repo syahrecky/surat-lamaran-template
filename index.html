@@ -8,13 +8,33 @@
     <style>
       *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
       body{font-family:"Segoe UI",system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
+
+      /* Hide Google Translate toolbar & banner */
+      .goog-te-banner-frame, .skiptranslate { display:none !important; }
+      body { top: 0 !important; }
+      .goog-te-gadget { font-size: 0 !important; }
+      .goog-te-gadget select {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 12px !important;
+        padding: 5px 8px;
+        border: 1px solid #e0e0dd;
+        border-radius: 7px;
+        background: #fafafa;
+        color: #1a1a1a;
+        cursor: pointer;
+        outline: none;
+      }
+
       header{background:#fff;border-bottom:1px solid #e5e5e2;padding:1.25rem 2rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
       header .logo{width:32px;height:32px;background:#1a1a1a;border-radius:8px;display:flex;align-items:center;justify-content:center}
       header .logo svg{width:18px;height:18px}
       header h1{font-size:15px;font-weight:600}
       header span{font-size:13px;color:#888;margin-left:4px}
+      .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+      .translate-label { font-size: 12px; color: #888; white-space: nowrap; }
+
       .layout{max-width:1120px;margin:2rem auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
-      @media(max-width:780px){.layout{grid-template-columns:1fr}header{padding:1rem 1.25rem}}
+      @media(max-width:780px){.layout{grid-template-columns:1fr}header{padding:1rem 1.25rem}.header-right{gap:6px}}
       .card{background:#fff;border-radius:14px;border:1px solid #e5e5e2;padding:1.75rem}
       .card-title{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.25rem}
       .divider{height:1px;background:#f0f0ee;margin:1.25rem 0}
@@ -67,7 +87,13 @@
           <line x1="16" y1="17" x2="8" y2="17"/>
         </svg>
       </div>
-      <h1>Generator Surat Lamaran Kerja 1<span>— download PDF</span></h1>
+      <h1>Generator Surat Lamaran Kerja <span>— download PDF</span></h1>
+
+      <!-- Google Translate Widget -->
+      <div class="header-right">
+        <span class="translate-label">🌐 Bahasa:</span>
+        <div id="google_translate_element"></div>
+      </div>
     </header>
 
     <div class="layout">
@@ -152,9 +178,24 @@
       </div>
     </div>
 
+    <!-- Google Translate CDN -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          {
+            pageLanguage: 'id',
+            includedLanguages: 'id,en,ar,zh-CN,ja,ko,ms,fr,de,es',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false,
+          },
+          'google_translate_element'
+        );
+      }
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <script>
-      // Helper: pastikan string selalu valid (tidak pernah undefined/null)
-      function s(v) {
+      function safeText(v) {
         if (v === null || v === undefined) return "";
         return String(v);
       }
@@ -175,61 +216,55 @@
         const now = new Date();
         
         return {
-          nama_perusahaan:    val("nama_perusahaan")  || "[Nama Perusahaan]",
-          alamat_perusahaan:  val("alamat_perusahaan")|| "[Alamat Perusahaan]",
-          posisi:             val("posisi")            || "[Posisi yang Dilamar]",
-          nama:               val("nama")              || "[Nama Lengkap]",
-          tempat_lahir:       val("tempat_lahir")      || "[Tempat Lahir]",
-          tgl_lahir:          val("tgl_lahir")         || "[Tanggal Lahir]",
-          agama:              val("agama")             || "Islam",
-          pendidikan:         val("pendidikan")        || "[Pendidikan Terakhir]",
-          alamat:             val("alamat")            || "[Alamat]",
-          telp:               val("telp")              || "[No. Telepon]",
-          status:             getStatus(),
-          deskripsi:          val("deskripsi")         || "Saya adalah orang yang mengutamakan kejujuran.",
+          nama_perusahaan:   val("nama_perusahaan")   || "[Nama Perusahaan]",
+          alamat_perusahaan: val("alamat_perusahaan") || "[Alamat Perusahaan]",
+          posisi:            val("posisi")             || "[Posisi yang Dilamar]",
+          nama:              val("nama")               || "[Nama Lengkap]",
+          tempat_lahir:      val("tempat_lahir")       || "[Tempat Lahir]",
+          tgl_lahir:         val("tgl_lahir")          || "[Tanggal Lahir]",
+          agama:             val("agama")              || "Islam",
+          pendidikan:        val("pendidikan")         || "[Pendidikan Terakhir]",
+          alamat:            val("alamat")             || "[Alamat]",
+          telp:              val("telp")               || "[No. Telepon]",
+          status:            getStatus(),
+          deskripsi:         val("deskripsi")          || "Saya adalah orang yang mengutamakan kejujuran.",
         };
       }
 
       function bio(label, value) {
-        return `<div class="bio"><span class="bio-label">${label}</span><span class="bio-colon">:</span><span>${value}</span></div>`;
+        return '<div class="bio"><span class="bio-label">' + label + '</span><span class="bio-colon">:</span><span>' + value + '</span></div>';
       }
 
       function preview() {
         const d = getData();
-        document.getElementById("preview-doc").innerHTML = `
-          <span class="gap-sm"></span>
-          <p>Kepada Yth.</p>
-          <p>Bpk / Ibu Personalia</p>
-          <p class="bold">${d.nama_perusahaan}</p>
-          <p>${d.alamat_perusahaan}</p>
-          <span class="gap"></span>
-          <p>Dengan hormat, Saya bermaksud untuk mengajukan lamaran pekerjaan agar dapat bergabung di perusahaan Bapak / Ibu pimpin. Saya sangat tertarik posisi <span class="bold">${d.posisi}</span> di perusahaan ini. Izinkan saya mengenalkan diri:</p>
-          <span class="gap-sm"></span>
-          ${bio("Nama", d.nama)}
-          ${bio("Tempat/Tanggal Lahir", d.tempat_lahir + " / " + d.tgl_lahir)}
-          ${bio("Agama", d.agama)}
-          ${bio("Pendidikan Terakhir", d.pendidikan)}
-          ${bio("Alamat", d.alamat)}
-          ${bio("Telepon (HP)", d.telp)}
-          ${bio("Status", d.status)}
-          <span class="gap"></span>
-          <p>Dalam penulisan surat ini, saya dalam keadaan sehat dan fasih dalam berbahasa bilingual indonesia dan inggris. ${d.deskripsi}</p>
-          <span class="gap"></span>
-          <p>Saya melampirkan berkas sebagai bahan pertimbangan :</p>
-          <ol>
-            <li>Surat Lamaran</li>
-            <li>Curriculum Vitae</li>
-            <li>Foto KTP &amp; KK</li>
-            <li>Foto 4x6</li>
-            <li>Sertifikat</li>
-          </ol>
-          <span class="gap"></span>
-          <p>Saya sangat berharap bisa bertemu dengan Bapak / Ibu personalia untuk melakukan interview agar bisa lebih jelas dan rinci menjelaskan keahlian saya. Demikian surat lamaran yang saya buat ini, saya ucapkan terima kasih.</p>
-          <span class="gap"></span>
-          <p class="kanan">Hormat saya,</p>
-          <br><br><br>
-          <p class="kanan">${d.nama}</p>
-        `;
+        document.getElementById("preview-doc").innerHTML =
+          '<span class="gap-sm"></span>' +
+          '<p>Kepada Yth.</p>' +
+          '<p>Bpk / Ibu Personalia</p>' +
+          '<p class="bold">' + d.nama_perusahaan + '</p>' +
+          '<p>' + d.alamat_perusahaan + '</p>' +
+          '<span class="gap"></span>' +
+          '<p>Dengan hormat, Saya bermaksud untuk mengajukan lamaran pekerjaan agar dapat bergabung di perusahaan Bapak / Ibu pimpin. Saya sangat tertarik posisi <span class="bold">' + d.posisi + '</span> di perusahaan ini. Izinkan saya mengenalkan diri:</p>' +
+          '<span class="gap-sm"></span>' +
+          bio("Nama", d.nama) +
+          bio("Tempat/Tanggal Lahir", d.tempat_lahir + " / " + d.tgl_lahir) +
+          bio("Agama", d.agama) +
+          bio("Pendidikan Terakhir", d.pendidikan) +
+          bio("Alamat", d.alamat) +
+          bio("Telepon (HP)", d.telp) +
+          bio("Status", d.status) +
+          '<span class="gap"></span>' +
+          '<p>Dalam penulisan surat ini, saya dalam keadaan sehat dan fasih dalam berbahasa bilingual indonesia dan inggris. ' + d.deskripsi + '</p>' +
+          '<span class="gap"></span>' +
+          '<p>Saya melampirkan berkas sebagai bahan pertimbangan :</p>' +
+          '<ol><li>Surat Lamaran</li><li>Curriculum Vitae</li><li>Foto KTP &amp; KK</li><li>Foto 4x6</li><li>Sertifikat</li></ol>' +
+          '<span class="gap"></span>' +
+          '<p>Saya sangat berharap bisa bertemu dengan Bapak / Ibu personalia untuk melakukan interview agar bisa lebih jelas dan rinci menjelaskan keahlian saya. Demikian surat lamaran yang saya buat ini, saya ucapkan terima kasih.</p>' +
+          '<span class="gap"></span>' +
+          '<p class="kanan">Hormat saya,</p>' +
+          '<br><br><br>' +
+          '<p class="kanan">' + d.nama + '</p>';
+
         document.getElementById("preview-empty").style.display = "none";
         document.getElementById("preview-wrapper").style.display = "block";
         document.getElementById("preview-wrapper").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -255,18 +290,12 @@
             if (y > 270) { doc.addPage(); y = mT; }
           }
 
-          // KUNCI: fungsi safeText — konversi ke string dulu sebelum dipassing ke jsPDF
-          function safeText(v) {
-            if (v === null || v === undefined) return "";
-            return String(v);
-          }
-
           function text(str, opts) {
             opts = opts || {};
             var bold = opts.bold || false;
             var align = opts.align || "left";
             var size = opts.size || 12;
-            var safeStr = safeText(str); // <-- pastikan string
+            var safeStr = safeText(str);
             doc.setFont("times", bold ? "bold" : "normal");
             doc.setFontSize(size);
             checkPage();
@@ -275,10 +304,7 @@
               y += lh;
             } else {
               var lines = doc.splitTextToSize(safeStr, cW);
-              lines.forEach(function(l, i) {
-                checkPage();
-                doc.text(safeText(l), mL, y + i * lh);
-              });
+              lines.forEach(function(l, i) { checkPage(); doc.text(safeText(l), mL, y + i * lh); });
               y += lines.length * lh;
             }
           }
@@ -345,7 +371,6 @@
           text(d.nama, { align: "right" });
 
           doc.save("Surat_Lamaran_" + d.nama_perusahaan.replace(/\s+/g, "_") + ".pdf");
-
         } catch(e) {
           console.error("PDF Error:", e);
           alert("Gagal membuat PDF: " + e.message);
