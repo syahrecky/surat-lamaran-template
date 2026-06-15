@@ -440,7 +440,7 @@
               type="text"
               id="alamat"
               placeholder="Jl. Merdeka No. 10, Jakarta Pusat"
-              value="Jl. Kota Bambu Utara III Blok Darul Hidayah No.39, RT.11/RW.6, Kota Bambu Utara,"
+              value="Jl. Kota Bambu Utara III Blok Darul Hidayah No.39, RT.11/RW.6, Kota Bambu Utara, Jakarta Barat, DKI Jakarta"
             />
           </div>
           <div class="field">
@@ -630,7 +630,6 @@ Saya sudah berpengalaman dalam membangun Website lebih dari 3 tahun dan telah me
       function preview() {
         const d = getData();
         document.getElementById("preview-doc").innerHTML = `
-      <p class="kanan">${d.kota_tanggal}</p>
       <span class="gap-sm"></span>
       <p>Kepada Yth.</p>
       <p>Bpk / Ibu Personalia</p>
@@ -644,7 +643,7 @@ Saya sudah berpengalaman dalam membangun Website lebih dari 3 tahun dan telah me
       ${bio("Agama", d.agama)}
       ${bio("Pendidikan Terakhir", d.pendidikan)}
       ${bio("Alamat", d.alamat)}
-      ${bio("Telepon (HP)", d.telp)}
+      ${bio("Telepon (WhatsApp)", d.telp)}
       ${bio("Status", d.status)}
       <span class="gap"></span>
       <p>Dalam penulisan surat ini, saya dalam keadaan sehat dan fasih dalam berbahasa bilingual indonesia dan inggris. ${d.deskripsi}</p>
@@ -744,7 +743,6 @@ Saya sudah berpengalaman dalam membangun Website lebih dari 3 tahun dan telah me
         gap();
         bioRow("Nama", d.nama);
         bioRow("Tempat/Tanggal Lahir", `${d.tempat_lahir} / ${d.tgl_lahir}`);
-        bioRow("TB / BB", `${d.tb} cm / ${d.bb} kg`);
         bioRow("Agama", d.agama);
         bioRow("Pendidikan Terakhir", d.pendidikan);
         bioRow("Alamat", d.alamat);
