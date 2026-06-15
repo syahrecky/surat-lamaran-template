@@ -123,7 +123,7 @@
             </select>
           </div>
           <div class="field full"><label>Pendidikan terakhir</label><input type="text" id="pendidikan" placeholder="S1 Manajemen, Universitas Indonesia" value="S1 Teknik Informatika, Universitas Muhammadiyah Malang"/></div>
-          <div class="field full"><label>Alamat lengkap</label><input type="text" id="alamat" placeholder="Jl. Merdeka No. 10, Jakarta Pusat" value="Jl. Kota Bambu Utara III Blok Darul Hidayah No.39, RT.11/RW.6, Kota Bambu Utara, Jakarta Barat, DKI Jakarta"/></div>
+          <div class="field full"><label>Alamat lengkap</label><input type="text" id="alamat" placeholder="Jl. Merdeka No. 10, Jakarta Pusat" value="Jl. Kota Bambu Utara III Blok Darul Hidayah, Kota Bambu Utara, Jakarta Barat, DKI Jakarta"/></div>
           <div class="field"><label>No. telepon / WhatsApp</label><input type="text" id="telp" placeholder="08xx-xxxx-xxxx" value="0896-9873-1176"/></div>
           <div class="field">
             <label>Status pernikahan</label>
@@ -310,12 +310,20 @@
           }
 
           function bioRow(label, value) {
-            doc.setFont("times", "normal");
-            doc.setFontSize(12);
-            checkPage();
-            doc.text(safeText(label), mL, y);
-            doc.text(": " + safeText(value), mL + 52, y);
-            y += lhBio;
+              const colonX = mL + 45;
+              const valueX = colonX + 5;
+              const valueWidth = pageW - mR - valueX;
+
+              doc.text(label, mL, y);
+              doc.text(":", colonX, y);
+
+              const lines = doc.splitTextToSize(value, valueWidth);
+
+              lines.forEach((line, i) => {
+                  doc.text(line, valueX, y + (i * lhBio));
+              });
+
+              y += lines.length * lhBio;
           }
 
           function gap(n) {
