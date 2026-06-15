@@ -347,7 +347,7 @@
           bioRow("Agama", d.agama);
           bioRow("Pendidikan Terakhir", d.pendidikan);
           bioRow("Alamat", d.alamat);
-          bioRow("Telepon (HP)", d.telp);
+          bioRow("Telepon (WhatsApp)", d.telp);
           bioRow("Status", d.status);
           gap(2);
 
@@ -360,7 +360,7 @@
 
           text("Saya melampirkan berkas sebagai bahan pertimbangan :");
           gap(0.5);
-          var lampiran = ["Surat Lamaran","Curriculum Vitae","Foto KTP & KK","Foto 4x6","Foto SKHUN","Sertifikat"];
+          var lampiran = ["Surat Lamaran","Curriculum Vitae","Sertifikat"];
           lampiran.forEach(function(item, i) { checkPage(); doc.text((i+1) + ". " + item, mL + 4, y); y += lh; });
           gap(2);
 
@@ -369,7 +369,7 @@
           doc.setFont("times", "normal");
           wPenutup.forEach(function(l, i) { checkPage(); doc.text(safeText(l), mL, y + i * lh); });
           y += wPenutup.length * lh;
-          gap(2);
+          gap(1);
 
           text("Hormat saya,", { align: "right" });
           y += lh * 4;
