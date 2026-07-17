@@ -50,6 +50,9 @@
       .radio-group{display:flex;gap:16px;padding:8px 0 2px}
       .radio-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:#444;cursor:pointer;font-weight:400}
       .radio-group input[type="radio"]{width:15px;height:15px;accent-color:#1a1a1a;cursor:pointer}
+      .checkbox-group{display:flex;flex-wrap:wrap;gap:10px 18px;padding:8px 0 2px}
+      .checkbox-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:#444;cursor:pointer;font-weight:400}
+      .checkbox-group input[type="checkbox"]{width:15px;height:15px;accent-color:#1a1a1a;cursor:pointer}
       .btn-row{display:flex;gap:10px;margin-top:1.5rem}
       .btn{flex:1;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #e0e0dd;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,transform .1s;font-family:inherit}
       .btn:active{transform:scale(.98)}
@@ -141,6 +144,20 @@
             <textarea id="deskripsi" placeholder="Saya adalah orang yang mengutamakan kejujuran...">Saya sudah berpengalaman dalam membangun Website lebih dari 3 tahun dan telah membuat berbagai website untuk kebutuhan pendidikan, operasional bisnis, rumah sakit, dan hal lainya. Saya adalah orang yang mengutamakan kejujuran, memiliki kemampuan dengan sangat mahir dalam bidang tersebut.</textarea>
           </div>
         </div>
+        <div class="divider"></div>
+        <p class="sub">Lampiran berkas</p>
+        <div class="grid-2">
+          <div class="field full">
+            <label>Centang berkas yang akan dilampirkan (kosongkan semua jika tidak ingin menampilkan bagian ini)</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" class="lampiran-item" value="Surat Lamaran" checked/> Surat Lamaran</label>
+              <label><input type="checkbox" class="lampiran-item" value="Curriculum Vitae" checked/> Curriculum Vitae</label>
+              <label><input type="checkbox" class="lampiran-item" value="Foto KTP & KK" checked/> Foto KTP &amp; KK</label>
+              <label><input type="checkbox" class="lampiran-item" value="Foto 4x6" checked/> Foto 4x6</label>
+              <label><input type="checkbox" class="lampiran-item" value="Sertifikat" checked/> Sertifikat</label>
+            </div>
+          </div>
+        </div>
         <div class="btn-row">
           <button class="btn btn-secondary" onclick="preview()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -211,6 +228,12 @@
         return el ? el.value : "Belum Kawin";
       }
 
+      function getLampiran() {
+        return Array.from(document.querySelectorAll('.lampiran-item:checked')).map(function (el) {
+          return el.value;
+        });
+      }
+
       function getData() {        
         return {
           nama_perusahaan:   val("nama_perusahaan")   || "[Nama Perusahaan]",
@@ -225,6 +248,7 @@
           telp:              val("telp")               || "[No. Telepon]",
           status:            getStatus(),
           deskripsi:         val("deskripsi")          || "Saya adalah orang yang mengutamakan kejujuran.",
+          lampiran:          getLampiran(),
         };
       }
 
@@ -234,6 +258,13 @@
 
       function preview() {
         const d = getData();
+
+        const lampiranBlock = d.lampiran.length
+          ? '<span class="gap"></span>' +
+            '<p>Saya melampirkan berkas sebagai bahan pertimbangan :</p>' +
+            '<ol>' + d.lampiran.map(function (item) { return '<li>' + item + '</li>'; }).join('') + '</ol>'
+          : '';
+
         document.getElementById("preview-doc").innerHTML =
           '<span class="gap-sm"></span>' +
           '<p>Kepada Yth.</p>' +
@@ -252,9 +283,7 @@
           bio("Status", d.status) +
           '<span class="gap"></span>' +
           '<p>Dalam penulisan surat ini, saya dalam keadaan sehat dan fasih dalam berbahasa bilingual indonesia dan inggris. ' + d.deskripsi + '</p>' +
-          '<span class="gap"></span>' +
-          '<p>Saya melampirkan berkas sebagai bahan pertimbangan :</p>' +
-          '<ol><li>Surat Lamaran</li><li>Curriculum Vitae</li><li>Foto KTP &amp; KK</li><li>Foto 4x6</li><li>Sertifikat</li></ol>' +
+          lampiranBlock +
           '<span class="gap"></span>' +
           '<p>Saya sangat berharap bisa bertemu dengan Bapak / Ibu personalia untuk melakukan interview agar bisa lebih jelas dan rinci menjelaskan keahlian saya. Demikian surat lamaran yang saya buat ini, saya ucapkan terima kasih.</p>' +
           '<span class="gap"></span>' +
@@ -358,11 +387,12 @@
           y += wIsi.length * lh;
           gap(2);
 
-          text("Saya melampirkan berkas sebagai bahan pertimbangan :");
-          gap(0.5);
-          var lampiran = ["Surat Lamaran","Curriculum Vitae","Sertifikat"];
-          lampiran.forEach(function(item, i) { checkPage(); doc.text((i+1) + ". " + item, mL + 4, y); y += lh; });
-          gap(2);
+          if (d.lampiran.length > 0) {
+            text("Saya melampirkan berkas sebagai bahan pertimbangan :");
+            gap(0.5);
+            d.lampiran.forEach(function(item, i) { checkPage(); doc.text((i+1) + ". " + item, mL + 4, y); y += lh; });
+            gap(2);
+          }
 
           var penutup = "Saya sangat berharap bisa bertemu dengan Bapak / Ibu personalia untuk melakukan interview agar bisa lebih jelas dan rinci menjelaskan keahlian saya. Demikian surat lamaran yang saya buat ini, saya ucapkan terima kasih.";
           var wPenutup = doc.splitTextToSize(penutup, cW);
